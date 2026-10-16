@@ -64,6 +64,7 @@ target_link_libraries(cli INTERFACE Threads::Threads)
 # ---------------------------------------------------------------
 # Boost.Asio support
 # ---------------------------------------------------------------
+set(CLI_BOOST_COMPILED OFF)
 if(CLI_UseBoostAsio)
     if(POLICY CMP0074)
         cmake_policy(SET CMP0074 NEW)   # <PackageName>_ROOT
@@ -83,6 +84,7 @@ if(CLI_UseBoostAsio)
     add_definitions(-DBOOST_ALL_NO_LIB) # for windows
 
     if(Boost_FOUND)
+        set(CLI_BOOST_COMPILED ON)
         message(STATUS "Using compiled Boost libraries on ${CMAKE_SYSTEM_NAME}")
         target_link_libraries(cli INTERFACE Boost::system Boost::date_time)
     else()
@@ -150,6 +152,10 @@ endif()
 if(CLI_BuildTests)
     enable_testing()
     add_subdirectory(test)
+    add_test(NAME cli_install_consumer
+        COMMAND ${CMAKE_COMMAND}
+            -DTEST_BINARY_DIR=${CMAKE_CURRENT_BINARY_DIR}/install-consumer
+            -P ${CMAKE_CURRENT_SOURCE_DIR}/test/cmake/install-consumer.cmake)
 endif()
 
 # ---------------------------------------------------------------
